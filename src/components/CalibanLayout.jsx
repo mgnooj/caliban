@@ -3,7 +3,7 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import { Link, Outlet } from "react-router";
 import logo from '../../assets/Caliban.png'
 import CalibanTextContext from '../calibanTextContext.js';
-import data from "../../data/data.json";
+import data from "../../public/data.json";
 
 function CalibanHeader() {
 
