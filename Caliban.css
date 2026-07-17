@@ -1,0 +1,19 @@
+#searchResult {
+    display: inline-block;
+    background-color:white;/*will change background-color of element */
+}
+
+#searchResult:hover {
+    background-color:lightgray; /*will change background-color of element on hover */
+}
+
+.scroll-box {
+  height: 80vh;
+  overflow: auto;       /* scrollbars appear both directions as needed */
+  border: 1px solid #ccc; /* optional, just to visualize the "window" */
+}
+
+.scroll-content {
+  white-space: nowrap;  /* prevents wrapping, so it can overflow horizontally */
+  display: inline-block; /* lets the content's natural width exceed the box */
+}
