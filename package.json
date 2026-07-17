@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist --user \"DeployBot <deploy@bot>\""
+    "deploy": "cd dist && git init && git add -A && git commit -m \"Deploy\" && git push -f git@github.com:username/repo-name.git master:gh-pages"
   },
   "homepage": "https://mgnooj.github.io/caliban",
   "dependencies": {
