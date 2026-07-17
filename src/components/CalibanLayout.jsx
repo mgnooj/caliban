@@ -1,14 +1,25 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { Link, Outlet } from "react-router";
 import logo from '../../assets/Caliban.png'
 import CalibanTextContext from '../calibanTextContext.js';
-import data from "../../public/data.json";
 
 function CalibanHeader() {
 
-    const texts = data;
-    
+    const [texts, setTexts] = useState([]);
+
+    useEffect(() => {
+        // Looks for 'mock-data.json' at the root of your domain
+        fetch(`/data.json`)
+        .then((response) => response.json())
+        .then((jsonData) => {
+            setTexts(jsonData);
+        })
+        .catch((error) => {
+            console.error("Error fetching mock data:", error);
+        });
+    }, []);
+
     return (
         <div>
             <Navbar bg="dark" variant="dark">
