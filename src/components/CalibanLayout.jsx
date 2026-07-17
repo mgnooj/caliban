@@ -10,7 +10,7 @@ function CalibanHeader() {
 
     useEffect(() => {
         // Looks for 'mock-data.json' at the root of your domain
-        fetch(`/data.json`)
+        fetch(`/caliban/data.json`)
         .then((response) => response.json())
         .then((jsonData) => {
             setTexts(jsonData);

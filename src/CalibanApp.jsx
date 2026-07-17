@@ -10,7 +10,7 @@ import CalibanNoMatch from './components/CalibanNoMatch.jsx';
 function CalibanApp() {
 
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/caliban">
         <Routes>
             <Route path="/" element={<CalibanLayout />}>
                 <Route index element={<CalibanTextAnalyzer />} />
