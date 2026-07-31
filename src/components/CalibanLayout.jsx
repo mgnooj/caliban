@@ -9,7 +9,7 @@ function CalibanHeader() {
     const [texts, setTexts] = useState([]);
 
     useEffect(() => {
-        // Looks for 'mock-data.json' at the root of your domain
+        // Looks for 'mock-data.json' at the root of domain
         fetch(`/caliban/data.json`)
         .then((response) => response.json())
         .then((jsonData) => {
@@ -26,17 +26,17 @@ function CalibanHeader() {
                 <Container>
                     <Navbar.Brand as={Link} to="/" style={{display: 'contents'}}>
                         <img
-                            alt="Caliban Logo"
+                            alt="Caliban: Interactive Shakespeare Concordance"
                             src={logo}
                             width="100"
                             height="100"
                             className="d-inline-block align-top"
                         />{' '}
-                        Caliban - Interactive Shakespeare Concordance
+                        Caliban: Interactive Shakespeare Concordance
                     </Navbar.Brand>
                     <Nav className="ms-4">
                         <Nav.Link as={Link} to="/">Analyze</Nav.Link> 
-                        <Nav.Link as={Link} to="/search">Search</Nav.Link> 
+                        <Nav.Link as={Link} to="/search">Search</Nav.Link>
                         <Nav.Link as={Link} to="/about">About</Nav.Link> 
                     </Nav>
                 </Container>

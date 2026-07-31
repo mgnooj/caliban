@@ -1,6 +1,7 @@
-import React, { useRef, useContext, useEffect, useState } from "react"
+import React, { useRef, useContext, useTransition, useEffect, useState } from "react"
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { useSearchParams, useNavigate } from 'react-router';
+import { BeatLoader } from 'react-spinners';
 import CalibanAnalysisWindow from "./CalibanAnalysisWindow.jsx";
 import CalibanTextContext from '../calibanTextContext.js';
 import analyze from '../analyze.js';
@@ -11,6 +12,7 @@ function CalibanTextAnalyzer() {
     const textBox = useRef();
     const speakerBox = useRef();
     const lineBox = useRef();
+    const selectPlay = useRef();
     const scrollBoxRef = useRef(null);
     const lineRefs = useRef(new Map());
 
@@ -20,6 +22,7 @@ function CalibanTextAnalyzer() {
     const [selectedText, setSelectedText] = useState("");
     const [analysis, setAnalysis] = useState(null);
     const [searchParams] = useSearchParams();
+    const [isLoading, startTransition] = useTransition();
     const searchQuery = searchParams.get('q');
     const highlightedStyle = {backgroundColor: 'lightgray'};
 
@@ -29,15 +32,17 @@ function CalibanTextAnalyzer() {
 
     useEffect(() => {
         if (!searchQuery) return;
-        const query = searchQuery.split(',');
-        const chosenText = query[0];
-        const lineNumber = `${query[1]},${query[2]},${query[3]}`;
-        const playName = chosenText.toLowerCase();
-        const text = texts.filter((x) => x.name == playName.replaceAll(" ", "_"));
-        setText(text);
-        setAnalysis(analyze(text));
-        pendingScrollLine.current = lineNumber;
-        setHighlightedLines([lineNumber]);
+        startTransition(() => {
+            const query = searchQuery.split(',');
+            const chosenText = query[0];
+            const lineNumber = `${query[1]},${query[2]},${query[3]}`;
+            const playName = chosenText.toLowerCase();
+            const text = texts.filter((x) => x.name == playName.replaceAll(" ", "_"));
+            setText(text);
+            setAnalysis(analyze(text));
+            pendingScrollLine.current = lineNumber;
+            setHighlightedLines([lineNumber]);
+        });
     }, [searchQuery]);
 
     useEffect(() => {
@@ -74,13 +79,16 @@ function CalibanTextAnalyzer() {
         navigate(`/search?q=${selectedText}`);
     }
 
-    const updateText = (play) => {
-        const playName = play.toLowerCase();
-        const text = texts.filter((x) => x.name == playName.replaceAll(" ", "_"));
-        setText(text);
-        scrollToTop();
-        setHighlightedLines([]);
-        setAnalysis(analyze(text));
+    const updateText = () => {
+        startTransition(() => {
+            const play = selectPlay.current.value;
+            const playName = play.toLowerCase();
+            const text = texts.filter((x) => x.name == playName.replaceAll(" ", "_"));
+            setText(text);
+            scrollToTop();
+            setHighlightedLines([]);
+            setAnalysis(analyze(text));
+        });
     }
 
     const scrollToLine = (lineNumber) => {
@@ -100,59 +108,64 @@ function CalibanTextAnalyzer() {
     return <>
         <Container fluid>
             <Row>
-                <Col md={2} className="scroll-box">
-                    <div id="texts-list" className="scroll-content">
-                        <Row className="gx-5 flex-nowrap">
-                            <Col xs="auto">
-
-                                {plays.map((play) => (
-                                    <Row key={`${play}-row`}>
-                                        <Button onClick={() => updateText(play)} key={play}>{play}</Button>
-                                    </Row>
-                                ))}
-                            </Col>
-                        </Row>
+                <Col md={6} >
+                    <div id="selectBoxDiv">
+                    <label>Selected text:</label>
+                    <select id="selectBox" ref={selectPlay} onChange={() => updateText()}>
+                        <option disabled>--List of texts--</option>
+                        {plays.map((play) => (
+                            <option key={play} value={play}>{play}</option>
+                        ))}
+                    </select>
                     </div>
-                </Col>
-
-                <Col md={8} className="scroll-box" ref={scrollBoxRef}>
+                <Col md={12} className="scroll-box" ref={scrollBoxRef}>
                     <div className="scroll-content">
-                        <Row className="gx-5 flex-nowrap">
-                            <Col xs="auto">
-                                {text.map((x) => {
-                                    const lineNumber = `${x.act},${x.scene},${x.line}`;
-                                    return (
-                                        <Row key={`speaker-${lineNumber}`} className="gx-4 flex-nowrap" style={highlightedLines.includes(lineNumber) ? highlightedStyle : {}}>
-                                            <Col xs="auto">{lineNumber.replaceAll(',', '.')}</Col>
-                                            <Col className="text-end" >{x.speaker.slice(0, 16)}</Col>
-                                        </Row>
-                                    );
-                                })}
-                            </Col>
-                            <Col xs="auto" onMouseUp={(event) => handleTextHighlight(event)}>
-                                {text.map((x) => {
-                                    const lineNumber = `${x.act},${x.scene},${x.line}`;
-                                    return (
-                                        <Row 
-                                        key={`words-${lineNumber}`}
-                                        style={highlightedLines.includes(lineNumber) ? highlightedStyle : {}}
-                                        className="flex-nowrap" 
-                                        ref={(el) => {
-                                            if (el) lineRefs.current.set(lineNumber, el);
-                                            else lineRefs.current.delete(lineNumber);
-                                        }}
-                                        >
-                                            {x.words}
-                                        </Row>
-                                    );
-                                })}
-                            </Col>
-                        </Row>
+                        { isLoading ? 
+                            <BeatLoader color="#36d7b7"/>
+                        :
+                            <Row className="gx-5 flex-nowrap">
+                                <Col xs="auto">
+                                    {text.map((x) => {
+                                        const lineNumber = `${x.act},${x.scene},${x.line}`;
+                                        return (
+                                            <Row key={`speaker-${lineNumber}`} className="gx-4 flex-nowrap" style={highlightedLines.includes(lineNumber) ? highlightedStyle : {}}>
+                                                <Col xs="auto">{lineNumber.replaceAll(',', '.')}</Col>
+                                                <Col className="text-end" >{x.speaker.slice(0, 16)}</Col>
+                                            </Row>
+                                        );
+                                    })}
+                                </Col>
+                                <Col xs="auto" onMouseUp={(event) => handleTextHighlight(event)}>
+                                    {text.map((x) => {
+                                        const lineNumber = `${x.act},${x.scene},${x.line}`;
+                                        return (
+                                            <Row 
+                                            key={`words-${lineNumber}`}
+                                            style={highlightedLines.includes(lineNumber) ? highlightedStyle : {}}
+                                            className="flex-nowrap" 
+                                            ref={(el) => {
+                                                if (el) lineRefs.current.set(lineNumber, el);
+                                                else lineRefs.current.delete(lineNumber);
+                                            }}
+                                            >
+                                                {x.words}
+                                            </Row>
+                                        );
+                                    })}
+                                </Col>
+                            </Row>
+                        }
                     </div>
                 </Col>
+                </Col>
 
-                <Col md={2}>
-                    <CalibanAnalysisWindow analysis={analysis} setHighlightedLines={highlightLines}></CalibanAnalysisWindow>
+                <Col md={6}>
+                    {
+                        isLoading ? 
+                            <BeatLoader color="#36d7b7"/> 
+                        :
+                            <CalibanAnalysisWindow analysis={analysis} setHighlightedLines={highlightLines}></CalibanAnalysisWindow>
+                    }
                 </Col>
             </Row>
         </Container>

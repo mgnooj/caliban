@@ -1,4 +1,4 @@
 function CalibanNoMatch() {
-    return <p>Wrong page</p>
+    return <p>Error: This page doesn't exist!</p>
 }
 export default CalibanNoMatch;

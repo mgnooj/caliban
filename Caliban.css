@@ -1,19 +1,54 @@
 #searchResult {
     display: inline-block;
     background-color:white;/*will change background-color of element */
+    cursor: pointer;
 }
 
 #searchResult:hover {
     background-color:lightgray; /*will change background-color of element on hover */
 }
 
+#dataDisplayField {
+    font-size: medium;
+}
+
+#selectBoxDiv {
+    margin: auto;
+    width: fit-content;
+    padding: 5px;
+}
+
+#selectBox {
+    margin: 5px;
+}
+
+#textAnalysisBox {
+    text-align: center;
+}
+
+#concordanceResult {
+    text-align: center;
+    font-size: smaller;
+    display: grid;
+    background-color:white;
+    cursor: pointer;
+    width: 100px;
+    height: 70px;
+    overflow: hidden;
+}
+
+#concordanceResult:hover {
+    background-color:lightgray;
+}
+
 .scroll-box {
   height: 80vh;
-  overflow: auto;       /* scrollbars appear both directions as needed */
-  border: 1px solid #ccc; /* optional, just to visualize the "window" */
+  overflow: auto;
+  border: 1px solid #ccc;
 }
 
 .scroll-content {
-  white-space: nowrap;  /* prevents wrapping, so it can overflow horizontally */
-  display: inline-block; /* lets the content's natural width exceed the box */
+  font-size: small;
+  white-space: nowrap;
+  display: inline-block;
 }
